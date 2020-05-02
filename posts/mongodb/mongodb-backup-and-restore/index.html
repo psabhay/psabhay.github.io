@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51875295-4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-51875295-4');
+  </script>
+
+  <script data-ad-client="ca-pub-3643130310535590" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta property="og:title" content="Mongodb backup and restore" />
+<meta property="og:description" content="Learn how to backup and restore full Mongodb instance or, a specific database or collection." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/posts/mongodb/mongodb-backup-and-restore/" />
+<meta property="article:published_time" content="2015-11-18T22:43:12+01:00" />
+<meta property="article:modified_time" content="2015-11-18T22:43:12+01:00" />
+
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Mongodb backup and restore &middot; Abhay PS</title>
+  <meta name="description" content="Learn how to backup and restore full Mongodb instance or, a specific database or collection." />
+
+  
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link type="text/css" rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans|Zilla+Slab:400,400i,700&display=swap">
+</head>
+  <body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="">
+      <div class="sidebar-about">
+        <img src="/images/abhay-profile.jpg" class="rounded-circle logo-pic" alt="Abhay PS - Profile picture">
+        <a href="/"><h1>Abhay PS</h1></a>
+        <p class="lead">
+          Another drop in the pool
+        </p>
+      </div>
+
+      <nav class="">
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a> </li>
+          <li class="nav-item"><a class="nav-link" href="/about/"> About </a></li><li class="nav-item"><a class="nav-link" href="/categories/technology/"> Technology </a></li><li class="nav-item"><a class="nav-link" href="https://github.com/psabhay/"> Github </a></li><li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/psabhay/"> LinkedIn </a></li>
+        </ul>
+      </nav>
+
+      <p>&copy; 2020. All rights reserved. </p>
+    </div>
+  </div>
+</aside>
+
+    <main class="content">
+    <div class="post container mt-4">
+  <h1>Mongodb backup and restore</h1>
+  <h5>
+  <time datetime=2015-11-18T22:43:12&#43;0100 class="post-date">Wed, Nov 18, 2015</time>
+  </h5>
+  <p>
+  
+  
+    
+      <span class="badge badge-danger">
+          <a class="tags" href="/tags/database/">database</a>
+        </span>
+      <span class="badge badge-danger">
+          <a class="tags" href="/tags/mongodb/">mongodb</a>
+        </span>
+      <span class="badge badge-danger">
+          <a class="tags" href="/tags/nosql/">nosql</a>
+        </span>
+  </p>
+  <p>Backup and restore are essential routine jobs. If you are working with MongoDB, then you must know how to take backups as well as how to restore them. MongoDB comes with excellent command-line tools for taking backups and restoring backups, i.e., <code>mongodump</code> and <code>mongorestore.</code></p>
+<p>This post shows MongoDB&rsquo;s backup/restore methods; you can refer to MongoDB documentation for backup and restore strategies for more insight. But what I am going to show you are the most common and simple ways to backup and restore MongoDB.</p>
+<h2 id="copying-data-filesfolder">Copying data Files/Folder</h2>
+<p>The simplest way to backup or restore MongoDB would be to copy the database folder/files. That means if you are taking backup, then copy the database folder/files to your backup location. And if you are restoring, then copy the content of your backup folder to the database folder.</p>
+<p>To get the most reliable backup or restore by this method, you have to stop the MongoDB server first to avoid any changes to the files while copying them. If you don’t want to stop the MongoDB server, then you can use the following command to pause writes to the database.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.fsyncLock<span style="color:#f92672">()</span>
+</code></pre></div><p>Once you are done copying the files, run the following command to resume writes to the database.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.fsyncUnlock<span style="color:#f92672">()</span>
+</code></pre></div><p>Though <code>db.fsyncLock()</code> and <code>db.fsyncUnlock()</code> would work, my personal choice would be to shut down the MongoDB server if I want to go with this method.</p>
+<h2 id="mongodump">mongodump</h2>
+<p>The first thing I want you to do is, run the following command and go through all options you have with is the tool.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongodump –-help
+</code></pre></div><p>Let’s see some of the common usages of mongodump.
+If you want to take a backup of all the databases and your MongoDB server runs on the default port, which <code>27017</code>, then run the mongodump command with no option.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongodump
+</code></pre></div><p>The above command creates a dump folder in the current location and put the dump files in it.</p>
+<p>If you are running MongoDB server on some other port, let’s say 30000, then you can provide the port as an option.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongodump –-port <span style="color:#ae81ff">30000</span>
+</code></pre></div><p>If you have MongoDB server running on a remote server, then you can pass the host as a command-line option. Assuming that the firewall allows connection, you can do something like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongodump –-host xxx.xxx.xxx.xxx
+</code></pre></div><p>If you want to take a backup of a specific database, then it would like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongodump –-db mydatabase
+</code></pre></div><p>If you want to a backup of a specific collection of a database, then you can do like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongodump –-db mydatabase –-collection mycollection
+</code></pre></div><p>You can use whatever option is needed. I hope the above examples gave you a pretty clear idea about how to use the options available.</p>
+<p>It might happen that when the mongodump tool is doing the backup, writes are also going on. In this case, it’s difficult to trust the integrity of the backup. To fix this issue, you can use the <code>–-oplog</code> option. It ensures that you get <em>point-in-time</em> backup. The command would look like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongodump --oplog
+</code></pre></div><p>When using the <code>--oplog</code> option, remember that you must use <code>--oplogReplay</code> option when restoring the backup.</p>
+<h2 id="mongorestore">mongorestore</h2>
+<p>mongorestore tool restores the backup taken by the mongodump tool. The usage of command-line options is similar for both mongodump and mongorestore. So, you can refer to the mongorestore section to see the available options. Let’s see some of the common ways to use it.</p>
+<p>If you want to restore databases from the dump folder. Run the following command –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongorestore dump/
+</code></pre></div><p>The above command restores the databases taking the dump from the <code>dump</code> folder in the current working directory. Mongorestore command merges the databases with the existing ones. If you don’t want to merge databases, use the <code>--drop</code> option to drop the database first, and then restore it. Like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongorestore –-drop dump/
+</code></pre></div><p>If you want to restore a specific database, then you can use the option for the database name.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongorestore –-db mydb –-drop dump/mydb
+</code></pre></div><p>If you want to restore specific collection from a database, then it goes like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongorestore –-db mydb –-collection mycol –-drop dump/mydb/mycol.bson
+</code></pre></div><p>There are plenty of other options available with a mongorestore. You can take a look at the options by running the following command.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mongorestore --help
+</code></pre></div>
+
+  	<h2>Comments</h2>
+	<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "psabhay" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+    </main>
+
+    
+  </body>
+</html>

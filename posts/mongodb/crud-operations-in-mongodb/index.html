@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51875295-4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-51875295-4');
+  </script>
+
+  <script data-ad-client="ca-pub-3643130310535590" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta property="og:title" content="CRUD operations in Mongodb" />
+<meta property="og:description" content="Learn how to create, read, update and delete documents in Mongodb." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/posts/mongodb/crud-operations-in-mongodb/" />
+<meta property="article:published_time" content="2015-08-18T20:18:53+01:00" />
+<meta property="article:modified_time" content="2015-08-18T20:18:53+01:00" />
+
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>CRUD operations in Mongodb &middot; Abhay PS</title>
+  <meta name="description" content="Learn how to create, read, update and delete documents in Mongodb." />
+
+  
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link type="text/css" rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans|Zilla+Slab:400,400i,700&display=swap">
+</head>
+  <body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="">
+      <div class="sidebar-about">
+        <img src="/images/abhay-profile.jpg" class="rounded-circle logo-pic" alt="Abhay PS - Profile picture">
+        <a href="/"><h1>Abhay PS</h1></a>
+        <p class="lead">
+          Another drop in the pool
+        </p>
+      </div>
+
+      <nav class="">
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a> </li>
+          <li class="nav-item"><a class="nav-link" href="/about/"> About </a></li><li class="nav-item"><a class="nav-link" href="/categories/technology/"> Technology </a></li><li class="nav-item"><a class="nav-link" href="https://github.com/psabhay/"> Github </a></li><li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/psabhay/"> LinkedIn </a></li>
+        </ul>
+      </nav>
+
+      <p>&copy; 2020. All rights reserved. </p>
+    </div>
+  </div>
+</aside>
+
+    <main class="content">
+    <div class="post container mt-4">
+  <h1>CRUD operations in Mongodb</h1>
+  <h5>
+  <time datetime=2015-08-18T20:18:53&#43;0100 class="post-date">Tue, Aug 18, 2015</time>
+  </h5>
+  <p>
+  
+  
+    
+      <span class="badge badge-danger">
+          <a class="tags" href="/tags/database/">database</a>
+        </span>
+      <span class="badge badge-danger">
+          <a class="tags" href="/tags/mongodb/">mongodb</a>
+        </span>
+      <span class="badge badge-danger">
+          <a class="tags" href="/tags/nosql/">nosql</a>
+        </span>
+  </p>
+  <p>The acronym <code>CRUD</code> stands for <em>Create, Read, Update</em>, and <em>Delete</em>. In this section, we will learn basic CRUD operations. CRUD operations can be extremely complex sometimes, but we will not go into the complicated stuff for two reasons. First, it is not under the scope of this post. Second, we will be doing a lot of CRUD operations in the following posts.</p>
+<p>Before we start learning CRUD, I must tell you that we will be using the mongo shell for CRUD in the following sections.</p>
+<h2 id="create-or-insert-a-document">Create or insert a document</h2>
+<p>Data can be added to MongoDB in the form of documents. To add a document, we use the <code>insert()</code> function. We pass the document to be inserted into the <code>insert()</code> function. Let&rsquo;s see an example –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">use mydb
+db.clients.insert<span style="color:#f92672">({</span> <span style="color:#e6db74">&#34;name&#34;</span> : <span style="color:#e6db74">&#34;John Doe&#34;</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>The above example will insert a new document in the &lsquo;clients&rsquo; collection. To see the document we just inserted, you can use <code>find()</code> like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">use mydb
+db.clients.find<span style="color:#f92672">()</span>
+<span style="color:#f92672">{</span>
+    <span style="color:#e6db74">&#34;_id&#34;</span> : ObjectId<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;5411fa20f7983ae1ced3da66&#34;</span><span style="color:#f92672">)</span>,
+    <span style="color:#e6db74">&#34;name&#34;</span> : <span style="color:#e6db74">&#34;John Doe&#34;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>If the document is inserted properly, then you will see the inserted document in your shell. MongoDB automatically inserts the <code>_id</code> field. MongoDB does that automatically for you if the <code>_id</code> field doesn&rsquo;t exist. The value of the <code>_id</code> field is of ObjectId class. You can refer to the section on data types to learn more about <code>ObjectId</code>. MongoDB gives you the freedom to assign <code>_id</code> whatever value you want. If you have already assigned a value to <code>_id</code>, MongoDB will use it.</p>
+<h2 id="batch-insert">Batch insert</h2>
+<p>There are times when you would want to add more than one document. You can go ahead and make multiple insert queries, but MongoDB gives you a faster way to handle multiple insert operations. It&rsquo;s called a batch insert. For the batch insert, you pass an array of documents to <code>batchInsert()</code> function. Let&rsquo;s see an example –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt;use mydb
+db.clients.batchInsert<span style="color:#f92672">(</span> <span style="color:#f92672">[</span> <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;Mike&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;Lucy&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;Scott&#39;</span> <span style="color:#f92672">}</span> <span style="color:#f92672">]</span> <span style="color:#f92672">)</span>
+</code></pre></div><p>Batch inserting three documents may not make a huge difference but think about a situation where you can batch insert thousands of documents. In that case, the difference is significant and that is the situation when batch insert saves time.</p>
+<h2 id="remove-or-delete">Remove or Delete</h2>
+<p>Removing data is pretty straightforward. The method name is <code>remove()</code>, and it takes one optional argument, i.e., remove criteria. If no argument is given, then it will remove all documents existing in the collection. Of course, that logical and expected, right? If you want to remove some specific kind of documents, then you need to tell <code>remove()</code> function the matching criteria. Let&rsquo;s see an example –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">use mydb
+db.clients.remove<span style="color:#f92672">()</span>
+</code></pre></div><p>The above query will remove all documents in the <code>clients</code> collection. Though, removing all documents by <code>remove()</code> function would be slow. A better and faster way to remove all the documents in a collection is to drop the collection.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">use mydb
+db.clients.drop<span style="color:#f92672">()</span>
+</code></pre></div><p>Let&rsquo;s see how to remove documents that match certain criteria.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">use mydb
+db.clients.remove<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>This will remove all documents where the name is John Doe.</p>
+<h2 id="read-or-retrieve">Read or Retrieve</h2>
+<p>Retrieving data from the database is a common task. In MongoDB, it is performed using the find method. The find method takes two arguments, i.e., query criteria and projection criteria. Find will return the documents that match query criteria. Projection criteria, if provided, specifies which keys are to be returned. The find method is extremely useful and is used in different ways for different purposes. Here in this section, we will be learning only the more common usage. For details, check out mongodb documentation <a href="http://docs.MongoDB.org/manual/reference/method/db.collection.find/">here</a>.</p>
+<p>Fetch all the documents in a collection. Both the commands will match all the documents in the <code>clients</code> collection. The results will be shown in batches.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">()</span> db.clients.find<span style="color:#f92672">({})</span>
+</code></pre></div><p>To find documents where &lsquo;name&rsquo; is &lsquo;John Doe&rsquo;.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>To find documents where &lsquo;name&rsquo; is &lsquo;John Doe&rsquo; but get only &lsquo;name&rsquo; and &lsquo;age&rsquo; fields.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;name&#39;</span> : 1, <span style="color:#e6db74">&#39;age&#39;</span> : <span style="color:#ae81ff">1</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>To find documents where &lsquo;name&rsquo; is &lsquo;John Doe&rsquo; AND &lsquo;age&rsquo; is 25.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span>, <span style="color:#e6db74">&#39;age&#39;</span> : <span style="color:#ae81ff">25</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>To find documents where &lsquo;age&rsquo; <code>&gt;</code> 25.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;age&#39;</span> : <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;$gt&#39;</span> : <span style="color:#ae81ff">25</span> <span style="color:#f92672">}</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>To find documents where &lsquo;age&rsquo; <code>&lt;</code> 35.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;age&#39;</span> : <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;$lt&#39;</span> : <span style="color:#ae81ff">35</span> <span style="color:#f92672">}</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>To find documents where the &lsquo;age&rsquo; is between 25 and 35.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;age&#39;</span> : <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;$gte&#39;</span> : 25, <span style="color:#e6db74">&#39;$lte&#39;</span> : <span style="color:#ae81ff">35</span> <span style="color:#f92672">}</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>To find documents where the given regular expression matches.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : /John/i <span style="color:#f92672">})</span>
+</code></pre></div><p>A lot of other kinds of find queries are there. I would recommend you to go through the documentation link provided above.</p>
+<h2 id="update">Update</h2>
+<p>Modifications to documents in MongoDB are done with the update method. The update method takes two arguments. An optional third argument can also be passed for extra options. The first argument tells which documents are to be modified, and the second argument tells what to modify.</p>
+<p>Before I give you examples, let me give you a sample document on which we will perform example updates. Here it is –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">{</span>
+   <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span>,
+   <span style="color:#e6db74">&#39;age&#39;</span> : 25,
+   <span style="color:#e6db74">&#39;address&#39;</span> : <span style="color:#f92672">{</span>
+       <span style="color:#e6db74">&#39;house&#39;</span> : <span style="color:#e6db74">&#39;A – 45&#39;</span>,
+       <span style="color:#e6db74">&#39;street&#39;</span> : <span style="color:#e6db74">&#39;North Avenue&#39;</span>,
+       <span style="color:#e6db74">&#39;city&#39;</span> : <span style="color:#e6db74">&#39;New York&#39;</span>,
+       <span style="color:#e6db74">&#39;country&#39;</span> : <span style="color:#e6db74">&#39;usa&#39;</span>
+    <span style="color:#f92672">}</span>,
+   <span style="color:#e6db74">&#39;interests&#39;</span> : <span style="color:#f92672">[</span> <span style="color:#e6db74">&#39;reading&#39;</span>, <span style="color:#e6db74">&#39;travelling&#39;</span>, <span style="color:#e6db74">&#39;movies&#39;</span><span style="color:#f92672">]</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Change the whole document to <code>{ 'name' : 'Mike' }</code> where &lsquo;name&rsquo; is &lsquo;John Doe&rsquo;.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;Mike&#39;</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>Change the &lsquo;age&rsquo; to 35 where &lsquo;name&rsquo; is &lsquo;John Doe&rsquo;. <code>$set</code> sets the value of a field. If the field doesn&rsquo;t exist, <code>$set</code> will create the field.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;$set&#39;</span> : <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;age&#39;</span> : <span style="color:#ae81ff">35</span> <span style="color:#f92672">}</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>Add a new Boolean field &lsquo;married&rsquo; where &lsquo;name&rsquo; is &lsquo;John Doe&rsquo;.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;$set&#39;</span> : <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;married&#39;</span> : false <span style="color:#f92672">}</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>Add a new item &lsquo;driving&rsquo; to interests where &lsquo;country&rsquo; is &lsquo;usa&rsquo;.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;address.country&#39;</span> : <span style="color:#e6db74">&#39;usa&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;$push&#39;</span> : <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;interests&#39;</span> : <span style="color:#e6db74">&#39;driving&#39;</span> <span style="color:#f92672">}</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>Remove &lsquo;married&rsquo; field where &lsquo;name&rsquo; is &lsquo;John Doe&rsquo;. Suppose you don&rsquo;t want this field.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;$unset&#39;</span> : <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;married&#39;</span> : <span style="color:#ae81ff">1</span> <span style="color:#f92672">}</span> <span style="color:#f92672">})</span>
+</code></pre></div><p>Change &lsquo;age&rsquo; to 40 where &lsquo;name&rsquo; is &lsquo;John Doe&rsquo;. Also, insert a new document with &lsquo;age&rsquo; equals 40 if no match is found. This can be achieved by passing an optional third argument (upsert) to the update method.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;$set&#39;</span> : <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;age&#39;</span> : <span style="color:#ae81ff">40</span> <span style="color:#f92672">}</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> upsert : true <span style="color:#f92672">})</span>
+</code></pre></div><p>Change &lsquo;city&rsquo; to &lsquo;Chicago&rsquo; where &lsquo;name&rsquo; is &lsquo;John Doe&rsquo;. Also, update all the documents if more than one match is found. You can pass an optional third argument (multi) to the update method to achieve this.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">db.clients.find<span style="color:#f92672">({</span> <span style="color:#e6db74">&#39;name&#39;</span> : <span style="color:#e6db74">&#39;John Doe&#39;</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;$set&#39;</span> : <span style="color:#f92672">{</span> <span style="color:#e6db74">&#39;address.city&#39;</span> : <span style="color:#e6db74">&#39;Chicago&#39;</span> <span style="color:#f92672">}</span> <span style="color:#f92672">}</span>, <span style="color:#f92672">{</span> multi : true <span style="color:#f92672">})</span>
+</code></pre></div><p>The above are more common examples of an update operation. These examples are intended to give you an overview of update operations in MongoDB. I would highly recommend you to go through the documentation a few times. You can find the documentation for the update method <a href="http://docs.MongoDB.org/manual/reference/method/db.collection.update/">here</a>.</p>
+
+
+  	<h2>Comments</h2>
+	<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "psabhay" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+    </main>
+
+    
+  </body>
+</html>

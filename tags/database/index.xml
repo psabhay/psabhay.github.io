@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Database on Abhay PS</title>
+    <link>/tags/database/</link>
+    <description>Recent content in Database on Abhay PS</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 18 Nov 2015 22:43:12 +0100</lastBuildDate>
+    
+	<atom:link href="/tags/database/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Mongodb backup and restore</title>
+      <link>/posts/mongodb/mongodb-backup-and-restore/</link>
+      <pubDate>Wed, 18 Nov 2015 22:43:12 +0100</pubDate>
+      
+      <guid>/posts/mongodb/mongodb-backup-and-restore/</guid>
+      <description>Backup and restore are essential routine jobs. If you are working with MongoDB, then you must know how to take backups as well as how to restore them. MongoDB comes with excellent command-line tools for taking backups and restoring backups, i.e., mongodump and mongorestore.
+This post shows MongoDB&amp;rsquo;s backup/restore methods; you can refer to MongoDB documentation for backup and restore strategies for more insight. But what I am going to show you are the most common and simple ways to backup and restore MongoDB.</description>
+    </item>
+    
+    <item>
+      <title>CRUD operations in Mongodb</title>
+      <link>/posts/mongodb/crud-operations-in-mongodb/</link>
+      <pubDate>Tue, 18 Aug 2015 20:18:53 +0100</pubDate>
+      
+      <guid>/posts/mongodb/crud-operations-in-mongodb/</guid>
+      <description>The acronym CRUD stands for Create, Read, Update, and Delete. In this section, we will learn basic CRUD operations. CRUD operations can be extremely complex sometimes, but we will not go into the complicated stuff for two reasons. First, it is not under the scope of this post. Second, we will be doing a lot of CRUD operations in the following posts.
+Before we start learning CRUD, I must tell you that we will be using the mongo shell for CRUD in the following sections.</description>
+    </item>
+    
+    <item>
+      <title>Indexes in Mongodb</title>
+      <link>/posts/mongodb/indexes-in-mongodb/</link>
+      <pubDate>Sun, 19 Apr 2015 15:01:32 +0100</pubDate>
+      
+      <guid>/posts/mongodb/indexes-in-mongodb/</guid>
+      <description>MongoDB provides different kinds of indexes. Indexes are vital when the dataset is big. You just cannot keep scanning the whole collection on disk again and again for every query. So, indexing becomes extremely important when you have a massive amount of data stored in the collections. But when you have a huge dataset, then chances are there that one type of index will not fit for all as the nature of data differs.</description>
+    </item>
+    
+    <item>
+      <title>Mongodb GridFS using Python</title>
+      <link>/posts/mongodb/mongodb-gridfs-using-python/</link>
+      <pubDate>Wed, 18 Mar 2015 11:53:34 +0100</pubDate>
+      
+      <guid>/posts/mongodb/mongodb-gridfs-using-python/</guid>
+      <description>Data is collected and stored in different forms depending on the nature of data. It can be in the form of text, images, videos, audio files, and files in other formats. MongoDB can be used for storing all kinds of data, but so far, we have used it for storing plain text information in MongoDB documents. As you know by now, that MongoDB document has a size limit of 16MB. Though 16MB is good enough in most cases, but looks tiny if you think of storing high-resolution images, PDF files, music, videos, etc.</description>
+    </item>
+    
+  </channel>
+</rss>

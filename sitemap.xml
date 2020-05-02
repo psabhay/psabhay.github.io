@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2015-11-18T22:43:12+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <lastmod>2015-11-18T22:43:12+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/database/</loc>
+    <lastmod>2015-11-18T22:43:12+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/mongodb/</loc>
+    <lastmod>2015-11-18T22:43:12+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/mongodb/mongodb-backup-and-restore/</loc>
+    <lastmod>2015-11-18T22:43:12+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/nosql/</loc>
+    <lastmod>2015-11-18T22:43:12+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/</loc>
+    <lastmod>2015-11-18T22:43:12+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2015-11-18T22:43:12+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/technology/</loc>
+    <lastmod>2015-11-18T22:43:12+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/mongodb/crud-operations-in-mongodb/</loc>
+    <lastmod>2015-08-18T20:18:53+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/mongodb/indexes-in-mongodb/</loc>
+    <lastmod>2015-04-19T15:01:32+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/mongodb/mongodb-gridfs-using-python/</loc>
+    <lastmod>2015-03-18T11:53:34+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/pages/</loc>
+    <lastmod>2015-03-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/about/</loc>
+    <lastmod>2015-03-14T00:00:00+00:00</lastmod>
+  </url>
+  
+</urlset>

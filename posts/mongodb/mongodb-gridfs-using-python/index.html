@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-us" lang="en-us">
+<head>
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51875295-4"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-51875295-4');
+  </script>
+
+  <script data-ad-client="ca-pub-3643130310535590" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta property="og:title" content="Mongodb GridFS using Python" />
+<meta property="og:description" content="Learn in detail about GridFS in Mongodb." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/posts/mongodb/mongodb-gridfs-using-python/" />
+<meta property="article:published_time" content="2015-03-18T11:53:34+01:00" />
+<meta property="article:modified_time" content="2015-03-18T11:53:34+01:00" />
+
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>Mongodb GridFS using Python &middot; Abhay PS</title>
+  <meta name="description" content="Learn in detail about GridFS in Mongodb." />
+
+  
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link type="text/css" rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|PT+Sans|Zilla+Slab:400,400i,700&display=swap">
+</head>
+  <body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="">
+      <div class="sidebar-about">
+        <img src="/images/abhay-profile.jpg" class="rounded-circle logo-pic" alt="Abhay PS - Profile picture">
+        <a href="/"><h1>Abhay PS</h1></a>
+        <p class="lead">
+          Another drop in the pool
+        </p>
+      </div>
+
+      <nav class="">
+        <ul class="nav flex-column">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a> </li>
+          <li class="nav-item"><a class="nav-link" href="/about/"> About </a></li><li class="nav-item"><a class="nav-link" href="/categories/technology/"> Technology </a></li><li class="nav-item"><a class="nav-link" href="https://github.com/psabhay/"> Github </a></li><li class="nav-item"><a class="nav-link" href="https://www.linkedin.com/in/psabhay/"> LinkedIn </a></li>
+        </ul>
+      </nav>
+
+      <p>&copy; 2020. All rights reserved. </p>
+    </div>
+  </div>
+</aside>
+
+    <main class="content">
+    <div class="post container mt-4">
+  <h1>Mongodb GridFS using Python</h1>
+  <h5>
+  <time datetime=2015-03-18T11:53:34&#43;0100 class="post-date">Wed, Mar 18, 2015</time>
+  </h5>
+  <p>
+  
+  
+    
+      <span class="badge badge-danger">
+          <a class="tags" href="/tags/database/">database</a>
+        </span>
+      <span class="badge badge-danger">
+          <a class="tags" href="/tags/mongodb/">mongodb</a>
+        </span>
+      <span class="badge badge-danger">
+          <a class="tags" href="/tags/nosql/">nosql</a>
+        </span>
+  </p>
+  <p>Data is collected and stored in different forms depending on the nature of data. It can be in the form of text, images, videos, audio files, and files in other formats. MongoDB can be used for storing all kinds of data, but so far, we have used it for storing plain text information in MongoDB documents. As you know by now, that MongoDB document has a size limit of 16MB. Though 16MB is good enough in most cases, but looks tiny if you think of storing high-resolution images, PDF files, music, videos, etc.</p>
+<p>In this chapter, we are going to see how we can store more information in MongoDB. Till now, we played around with storing text in JSON format, but in this post, we&rsquo;ll see how to store images, PDFs, audio, video, etc. I am sure you are going to enjoy this chapter. So, let&rsquo;s get started!</p>
+<h2 id="introduction">Introduction</h2>
+<p>MongoDB provides a way to store arbitrary large files through GridFS. Till now, we have inserted documents in MongoDB that have information in the form of <code>key=value</code> pairs. If you want to store files in MongoDB, then MongoDB provides this functionality as well. Let me introduce you to GridFS.</p>
+<p>GridFS is a protocol for storing and retrieving arbitrary large files. What GridFS does is, it divides one large file into multiple small chunks and stores each chunk as a separate document in MongoDB. The default size of the GridFS chunk is 255k. Yes, you guessed it right. Once the chunk is stored as a document in MongoDB, all those operations that can be performed on regular MongoDB documents can be performed on these documents as well. If I put simply, they are regular MongoDB documents.</p>
+<p>Now you must be wondering how do we get the file back if needed. The driver will reassemble the chunks for you, so you don&rsquo;t need to worry. Luckily, when using GridFS, the driver does all the magic and saves you from headaches and sleepless nights.</p>
+<p>GridFS uses two collections to save files. Both of them are under the default namespace of <code>fs</code>. Here are the two collections –</p>
+<p><code>files</code> – This collection has information about the file, like – file name, chunk size, upload date, etc.</p>
+<p><code>chunks</code> – This collection holds the chunks, as the name suggests —documents in this collection host the binary data of the file. Every document contains the id of the file, binary data, and chunk sequence.</p>
+<p>Don&rsquo;t worry if you find this a little complex. Things will become much more clear once we start playing around with examples.</p>
+<p>Let&rsquo;s see what some of the benefits of storing files in MongoDB are.</p>
+<h3 id="all-data-in-one-place">All data in one place</h3>
+<p>By storing files in MongoDB, you have all your data in one place. This reduces maintenance overhead. Traditionally, the files are stored in a folder somewhere in the file system, and the path to the file is saved in the database. This requires you to take care of files in the folder in addition to the database.</p>
+<h3 id="easy-backup">Easy backup</h3>
+<p>If you save your files in MongoDB, then backing them up is not at all a problem. Create a replica set, and you have the backup as well as failover ready. You also don&rsquo;t know to backup the database and files folder separately. You just have to take a backup of MongoDB, and you have all you need.</p>
+<h3 id="store-a-large-number-of-files">Store a large number of files</h3>
+<p>You can save a huge number of files in MongoDB. Unlike the file system, MongoDB has no limit on the number of documents it can handle. It solely depends on the resource you provide. You can also take advantage of sharding to distribute the load.
+Random access a file</p>
+<p>MongoDB splits the file into multiple chunks. This is how the GridFS work. It divides the file into chunks of 255K. Every chunk is a document, and it behaves just like a normal MongoDB document. This gives you some flexibility as you can ask for a specific chunk from a file, or you can skip chunks. This can be useful in video streaming services that allow skipping.</p>
+<p>Okay! Good enough theory. This book is not about theory, and I believe you also are more interested in practical code. What we are going to do now is, we&rsquo;ll see some simple examples using the <code>mongofiles</code> tool. Afterward, we&rsquo;ll jump over to Python and see some examples in python. So let&rsquo;s jump right in.</p>
+<h2 id="command-line-tool--mongofiles">Command line tool – <code>mongofiles</code></h2>
+<p>When you install MongoDB on your system, you get a few executable binary files like mongo, mongod, mongodump, mongorestore, etc. One of them is mongofiles. This tool is used to browse and modify GridFS files. It&rsquo;s a very simple tool, and we&rsquo;ll use it to whet our appetite. Let&rsquo;s see what we do with mongofiles.</p>
+<p>First, have a look at the options available with mongofiles. Open the Terminal on Unix/Linux or command prompt on windows and run the following command.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mongofiles
+</code></pre></div><p>The above command will show you a lot of options. I would suggest you go through all of them, at least once. Some of the options are common in all MongoDB tools. For instance &lsquo;-d&rsquo; option for database, &lsquo;-c&rsquo; option for collection, &lsquo;-h&rsquo; for hostname etc.</p>
+<p>The options that specific to mongofiles are –</p>
+<p><code>list</code> – list all files</p>
+<p><code>put</code> – add a file with filename</p>
+<p><code>get</code> – get a file with filename</p>
+<p><code>delete</code> – delete all files with filename</p>
+<h2 id="store-a-file">Store a file</h2>
+<p>Let&rsquo;s store our first file in MongoDB using the mongofiles tool. I have a picture of my system that I am going to store in MongoDB. Because mongofiles is there, so I don&rsquo;t need to worry about anything, I will just run the following command. One command and all done.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mongofiles -d <span style="color:#e6db74">&#39;mydb&#39;</span> put the-great-heads.jpg
+connected to: 127.0.0.1
+added file: <span style="color:#f92672">{</span> _id: ObjectId<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;54dbb22ca187e981e194a97c&#39;</span><span style="color:#f92672">)</span>, filename: <span style="color:#e6db74">&#34;the-great-heads.jpg&#34;</span>, chunkSize: 261120, uploadDate: new Date<span style="color:#f92672">(</span>1423684140782<span style="color:#f92672">)</span>, md5: <span style="color:#e6db74">&#34;f6b1abeb03c257e5ef1cf75e304fd5b9&#34;</span>, length: <span style="color:#ae81ff">5846083</span> <span style="color:#f92672">}</span>
+<span style="color:#66d9ef">done</span>!
+</code></pre></div><p>You can see I passed my database name using <code>-d</code> option. Then I use <code>put</code> command, which is for storing the file. And after <code>put</code> I mentioned the name of the file, which is the name of the picture I have on my system. If the file is not in your current location, then you have to provide a full path to the file.</p>
+<p>The put operation was successful, as it did not throw any error. You can see it return a JSON object containing information about the file. It returned filename, chunkSize, uploadDate, and length of the file stored.</p>
+<h2 id="list-files">List files</h2>
+<p>Now, let&rsquo;s use the <code>list</code> command with mongofiles to list the file in GridFS.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mongofiles -d <span style="color:#e6db74">&#39;mydb&#39;</span> list
+connected to: 127.0.0.1
+the-great-heads.jpg <span style="color:#ae81ff">5846083</span>
+</code></pre></div><p>The output is very clear. I don&rsquo;t think I need to explain this. You can see it is showing only one file because we stored only one file. The numbers shown against the file name is the size of the file in bytes.</p>
+<h2 id="delete-file">Delete file</h2>
+<p>Let&rsquo;s see how to delete a file. We can use the <code>delete</code> command with mongofiles to delete a GridFS file. Here is an example –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mongofiles -d <span style="color:#e6db74">&#39;mydb&#39;</span> delete the-great-heads.jpg
+connected to: 127.0.0.1
+<span style="color:#66d9ef">done</span>!
+</code></pre></div><p>Congratulations! We have just deleted the file we stored a minute ago.</p>
+<h2 id="gridfs-collections">GridFS collections</h2>
+<p>Before we go ahead any further, let&rsquo;s see <code>chunks</code> and <code>files</code> collections quickly so that you have a fair amount of ideas regarding the structure of documents inside them.</p>
+<p>Oops! We don&rsquo;t have data in this collection. You may remember that we deleted the only file we stored. No problem. Let&rsquo;s store the file again, and then we&rsquo;ll have a look at the GridFS collections from the <code>mongo</code> shell.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mongofiles -d <span style="color:#e6db74">&#39;mydb&#39;</span> put the-great-heads.jpg
+connected to: 127.0.0.1
+added file: <span style="color:#f92672">{</span> _id: ObjectId<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;54dbb9ca65b24efcec30a56c&#39;</span><span style="color:#f92672">)</span>, filename: <span style="color:#e6db74">&#34;the-great-heads.jpg&#34;</span>, chunkSize: 261120, uploadDate: new Date<span style="color:#f92672">(</span>1423686090205<span style="color:#f92672">)</span>, md5: <span style="color:#e6db74">&#34;f6b1abeb03c257e5ef1cf75e304fd5b9&#34;</span>, length: <span style="color:#ae81ff">5846083</span> <span style="color:#f92672">}</span>
+<span style="color:#66d9ef">done</span>!
+</code></pre></div><p>Okay! The above command ran well, and the file is stored again in the <code>mydb</code> database. Now, let&rsquo;s go to the <code>mongo</code> shell and see what&rsquo;s inside.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mongo localhost/mydb
+MongoDB shell version: 2.6.5
+connecting to: localhost/mydb
+</code></pre></div><p>The above command may look familiar to you. You have seen this a few times in previous chapters. In case you forget what this command does, mongo is MongoDB client to connect to the database and perform operations. By the above command, we are connected to the <code>mydb</code> database and can perform operations on the database.</p>
+<h2 id="files-collection">Files collection</h2>
+<p>Files collection contains metadata of files. It doesn&rsquo;t hold data itself. The real file is stored in chunks collection. Let&rsquo;s check the files collection first and see what information is stored there.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; db.fs.files.find<span style="color:#f92672">()</span>.pretty<span style="color:#f92672">()</span>
+<span style="color:#f92672">{</span>
+    <span style="color:#e6db74">&#34;_id&#34;</span> : ObjectId<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;54dbb9ca65b24efcec30a56c&#34;</span><span style="color:#f92672">)</span>,
+    <span style="color:#e6db74">&#34;filename&#34;</span> : <span style="color:#e6db74">&#34;the-great-heads.jpg&#34;</span>,
+    <span style="color:#e6db74">&#34;chunkSize&#34;</span> : 261120,
+    <span style="color:#e6db74">&#34;uploadDate&#34;</span> : ISODate<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;2015-02-11T20:21:30.205Z&#34;</span><span style="color:#f92672">)</span>,
+    <span style="color:#e6db74">&#34;md5&#34;</span> : <span style="color:#e6db74">&#34;f6b1abeb03c257e5ef1cf75e304fd5b9&#34;</span>,
+    <span style="color:#e6db74">&#34;length&#34;</span> : <span style="color:#ae81ff">5846083</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>You can see I used <code>find()</code> method on <code>fs.files</code> collections. As I told you, GridFS will save file metadata and chunks as documents so you can perform all the typical MongoDB operations on them as well. They are regular MongoDB documents. Our <code>find()</code> method returned only a single document because we have only one file right now. Let me explain the fields in brief. Don&rsquo;t worry; I will do it quickly; I don&rsquo;t want you to lose interest.</p>
+<p><code>_id</code> – This is an object id automatically created by MongoDB.</p>
+<p><code>filename</code> – The name of the file. It&rsquo;s better you give different names for files.</p>
+<p><code>chunkSize</code> – This is the size of the chunk. The default size is 255k.</p>
+<p><code>uploadDate</code> – The date and time of file upload.</p>
+<p><code>md5</code> – It&rsquo;s a hash that can be used to check file integrity.</p>
+<p><code>length</code> – Length of file.</p>
+<h2 id="chunks-collection">Chunks collection</h2>
+<p>The chunks collection is the one that holds the file data as you know by now that GridFS divides the file into multiple chunks and stores them in the form of documents in chunks collection. We can use the same technique that we used for file collection to query chunks collection. Because chunks collection holds the real data in binary form, the documents are big as compare to the documents in the files collection. So let&rsquo;s get only one document from chunks collection.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; db.fs.chunks.findOne<span style="color:#f92672">()</span>
+<span style="color:#f92672">{</span>
+    <span style="color:#e6db74">&#34;_id&#34;</span> : ObjectId<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;54dbb9cad26fa2234f917cf2&#34;</span><span style="color:#f92672">)</span>,
+    <span style="color:#e6db74">&#34;files_id&#34;</span> : ObjectId<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;54dbb9ca65b24efcec30a56c&#34;</span><span style="color:#f92672">)</span>,
+    <span style="color:#e6db74">&#34;n&#34;</span> : 7,
+    <span style="color:#e6db74">&#34;data&#34;</span> : BinData<span style="color:#f92672">(</span>0,<span style="color:#e6db74">&#34;SRbXIAVpU5LybByaEpP2jkDBQL5tVFad8sG4tlEbtn4voxBoJkuSrqamlMgQLYRjxhqMrxoMMo77tcQANm2YeGRAbNlocrtkuG0QyAGnEFtx0xEXK8Pi3cEqKHp44JHuajuKaeNEAyuEjJxBGMXbDpuckd+bkWs+I/a2w8IZAXza9bn8IHTDwVuw47NOEgUHIyjZZDyWK1aqOuTltuuw2K4o1PfK+PuaslgbLmFV98iCyvbzWKKVBO+E1zZYx3qLswIGTABLi5OK9nUNeWQNcnKjGljDvkweiSKK3qMiSAzWEEGpyQlbW1yqMa3YA9G1Yg+2CXJsiaOy0vy65DhoNpJkN1rhWG22RMuFpmBVhSA4ioy27SIAcljMo3O2W8JLLgtzctjlNbuNOJB2aDFDU98mRY2bxspEVJIyyJ4RRaQpMCehy6O3Nopa4K9OmTjRKOR2UyhJr2y3xNqQbJtotTbEDvYyLY4ndsBvo2XXN1Nqr0xA3Ty3C48Snvgo22SyCQU6ccvq2cY0GnVh075VxBxcgMeSkVZd8sEwWoEhsj8cjbkyPVpQBtgkSd2iIstqDXcYz5ORRHN3HhuemAS4hTELCeTbCgy47KQ5qVBPTGzWzDIQvYDqOmYkSTsxq1hbw65lAUspU0FLGnbJ2Bu1DmqGMU265Ucu+7kUC2PhpXrkSbOzcA1tXbr4ZI7L1W7DqKZK7WVdWwRgprsBfUUFcr36MwRzWVHbLSO9qIdWmQZANN8OCO7XI00K48ymItaTXY5cG0u/ZyNb2kRoNEEAeGAizuxMSXFV6nrgBrZyCAA12rhaDytwoR88r5NLTqB8ssxlfNykCnhgkCyA3stsPV3GwGAHhYEcRa4kD4euPECd2UTTuO253yXF3NpbYhRQYBZLKVtMQw3O+Mdjs1nzU164QGBiFtFII6nJAsYgFoq69iB45PiBZUQKIXRlQhJFSMhKFlpEdrWgSliafCcka5NY47PcuUlELEeOAmzs5OM8MbIcq+p8QO2MzTUayb8lSND1HbKTLvbMcSN24mCsw8RkSLasU/UfNfHvkZUHLgqlSMptulGnV4jfp44SLOzXIfJwRftHfCZEimrgB3K3inVsIkVHDW7liLbg7Y8YG7OML5KZQqeJ3XLRKxYQYmLljQtTKzOXNsjAE7rmi4nbpgjIkbspxALQiNQxBzIjPo0XSLhtFlpyFMx&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>I used <code>findOne()</code> method to get the first document that MongoDB finds in the collection. As you know, documents in chunks collection are 255k; I had to remove some of the lines from the data field; otherwise, the document would have taken 4-5 pages. Let&rsquo;s see what these fields are.</p>
+<p><code>_id</code> – This is an object id automatically created by MongoDB.</p>
+<p><code>files_id</code> – This is the value of the <code>_id</code> field of the file object in the file collection. All chunks of the same file will have the same files_id.</p>
+<p><code>n</code> – It&rsquo;s number given to chunks of the files. The initial value of n is 0.</p>
+<p><code>data</code> – This is the binary data of the chunk.</p>
+<h2 id="gridfs-with-pymongo">GridFS with Pymongo</h2>
+<p>I hope you are enjoying this interesting topic. But you must be wondering why we have not used Pymongo to interact with GridFS. I thought of explaining GridFS by using the <code>mongofiles</code> tool for two reasons. First, it is much simpler and so very effective to give you a high-level overview. Second, my intent was to introduce you to the mongofiles tool. I am sure you would, otherwise, even have not noticed that there is a tool called &lsquo;mongofiles&rsquo; for handling GridFS files.</p>
+<p>Okay! Your wait is over. Let&rsquo;s have some more fun with GridFS using Pymongo. Now what we are going to do is, we&rsquo;ll use Python&rsquo;s shell, also called REPL, for our Python code in one command-line shell. Also, we will keep the <code>mongo</code> shell open so that we can have a look at the collections quickly. Got it? Great! Let&rsquo;s get started.</p>
+<p>Open mongo shell like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ mongo
+MongoDB shell version: 2.6.5
+connecting to: test
+&gt;
+</code></pre></div><p>Now, open Python REPL –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ python
+Python 2.7.6 <span style="color:#f92672">(</span>default, Sep <span style="color:#ae81ff">9</span> 2014, 15:04:36<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>GCC 4.2.1 Compatible Apple LLVM 6.0 <span style="color:#f92672">(</span>clang-600.0.39<span style="color:#f92672">)]</span> on darwin
+Type <span style="color:#e6db74">&#34;help&#34;</span>, <span style="color:#e6db74">&#34;copyright&#34;</span>, <span style="color:#e6db74">&#34;credits&#34;</span> or <span style="color:#e6db74">&#34;license&#34;</span> <span style="color:#66d9ef">for</span> more information.
+&gt;&gt;&gt;
+</code></pre></div><p>For using GridFS with Pymongo, we need to import some classes. Let&rsquo;s import them first –
+Import MongoClient so that we can connect to a running mongod instance.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#f92672">from</span> pymongo <span style="color:#f92672">import</span> MongoClient
+</code></pre></div><p>Import GridFS from gridfs module so that we may put, get and delete files in MongoDB</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#f92672">from</span> gridfs <span style="color:#f92672">import</span> GridFS
+</code></pre></div><p>We also need to import <code>objectid</code> from the <code>bson</code> package because we are going to need it.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#f92672">from</span> bson <span style="color:#f92672">import</span> objectid
+</code></pre></div><p>All of the above should run without any error if you are following along from the start. These are simple import statements, and the only thing that can go wrong is a module not installed. In that case, you can use <code>pip</code> to install the Python module.</p>
+<h3 id="storing-strings">Storing strings</h3>
+<p>This time I&rsquo;ll start with saving a simple string in MongoDB using GridFS. It&rsquo;s pretty simple. Let me show you how.</p>
+<ol>
+<li>Connect to <code>mygrid</code> database like this –</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> db <span style="color:#f92672">=</span> MongoClient()<span style="color:#f92672">.</span>mygrid
+</code></pre></div><ol start="2">
+<li>Get the GridFS object</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> fs <span style="color:#f92672">=</span> GridFS(db)
+</code></pre></div><ol start="3">
+<li>Store “hello world” in MongoDB using GridFS. The put method will return the ObjectId of the stored file.</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> ob <span style="color:#f92672">=</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;hello world&#34;</span>)
+</code></pre></div><ol start="4">
+<li>Now, let&rsquo;s retrieve back the &lsquo;hello world&rsquo; we just stored. The get method is used to get the file. We&rsquo;ll pass the ObjectId returned by put() method. And, because get() method returns a file-like-object, we&rsquo;ll use read() method to read the content of the object. Like this –</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>get(ob)<span style="color:#f92672">.</span>read()
+<span style="color:#e6db74">&#39;hello world&#39;</span>
+</code></pre></div><p>Wow! Interesting, right? Though storing strings in GridFS is not something you would want. If you are thinking of using GridFS, then surely it&rsquo;s not because you have a problem storing strings otherwise. But I showed this just to give you an idea.</p>
+<h3 id="namespace">Namespace</h3>
+<p>In the mongo shell, if you go and check the collections in the <code>mygrid</code> database, you will find fs.files and fs.chunks collection. Nothing new, right? Do you remember I mentioned earlier that &lsquo;fs&rsquo; is the default namespace for GridFS collections? You can change it to whatever you like. For instance, if I were using GridFS to store the invoices, then I would want to have something like &lsquo;invoice.files&rsquo; and &lsquo;invoice.chunks&rsquo;. Don&rsquo;t you agree this makes more sense? Let me show you how to do this.</p>
+<p>In this example, we&rsquo;ll store an invoice that is in PDF form. Also, we&rsquo;ll use a different namespace for our GridFS collections.</p>
+<ol>
+<li>Connect to <code>mygrid</code> database like this –</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> db <span style="color:#f92672">=</span> MongoClient()<span style="color:#f92672">.</span>mygrid
+</code></pre></div><ol start="2">
+<li>Get the GridFS object. The first argument is the database object, and the second argument is the namespace.</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> fs <span style="color:#f92672">=</span> GridFS(db, <span style="color:#e6db74">&#34;invoice&#34;</span>)
+</code></pre></div><ol start="3">
+<li>Store the invoice located at /tmp/first-invoice.pdf</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> <span style="color:#66d9ef">with</span> open(<span style="color:#e6db74">&#39;/tmp/first-invoice.pdf&#39;</span>) <span style="color:#66d9ef">as</span> f:
+<span style="color:#f92672">...</span> invoice <span style="color:#f92672">=</span> fs<span style="color:#f92672">.</span>put(f, content_type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;application/pdf&#39;</span>, filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;first-invoice.pdf&#39;</span>)
+<span style="color:#f92672">...</span>
+</code></pre></div><p>Now, if you to mongo shell and check the collections in the &lsquo;mygrid&rsquo; database, you will find &lsquo;invoice.files&rsquo; and &lsquo;invoice.chunks&rsquo; collections.</p>
+<h3 id="reading-files">Reading files</h3>
+<p>We have seen how to store a file in MongoDB using GridFS. We have also used the <code>get()</code> method in short for getting the content of the file back in previous examples. But I think reading the file needs a little more attention. Let&rsquo;s take a look at the following example –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> db <span style="color:#f92672">=</span> MongoClient()<span style="color:#f92672">.</span>mygrid
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs <span style="color:#f92672">=</span> GridFS(db)
+<span style="color:#f92672">&gt;&gt;&gt;</span> ob <span style="color:#f92672">=</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;hello world&#34;</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>get(ob)<span style="color:#f92672">.</span>read()
+<span style="color:#e6db74">&#39;hello world&#39;</span>
+</code></pre></div><p>Yes, you got it right. You have seen this example earlier. I used it a little while ago. This time I just removed the explanation for each line. I believe you know what each line of code does by now. In this example, we stored a file with &lsquo;hello world&rsquo; as content. The <code>put()</code> method returned the <code>file_id</code>. We captured the <code>file_id</code> in the <code>ob</code> variable because we need this to identify the file just in case we want to get the file back. Then, when we needed to read the file, we just pass the ob variable to the <code>get()</code> method. Great! But what about the <code>read()</code> method? Actually, <code>get()</code> method returns a file-like-object, and to see the content, we can call <code>read()</code> method on this file-like-object. Wonderful! We have our highly impressive file content before us.</p>
+<p>I know you have a question in your mind. You are wondering what if we don&rsquo;t know the file_id. Yes, in most situations, you would not know the file_id. Most probably, you may know the name of the file. Remember that GridFS collections are just like regular MongoDB collections. What I would do in a situation is run a <code>find()</code> query on the fs.files collection and get the <code>_id</code>. This <code>_id</code> is the same as the file_id in fs.chunks collection. Now when I the <code>file_id</code>, I can go ahead and pass it to the <code>get()</code> method. Let&rsquo;s see an example.</p>
+<p>In this simple example, we&rsquo;ll store a string as a file in GridFS. There is nothing wrong with storing a real file, but I am storing string as file wholly for the sake of simplicity.</p>
+<ol>
+<li>Connect to mygrid database like this –</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> db <span style="color:#f92672">=</span> MongoClient()<span style="color:#f92672">.</span>mygrid
+</code></pre></div><ol start="2">
+<li>Get the GridFS object. The first argument is the database object, and the second argument is the namespace.</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> fs <span style="color:#f92672">=</span> GridFS(db, <span style="color:#e6db74">&#34;stringfiles&#34;</span>)
+</code></pre></div><ol start="3">
+<li>Store a new string with filename &ldquo;mystory.txt&rdquo;.</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;Here is the content of this file.&#34;</span>, filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mystory.txt&#34;</span>)
+</code></pre></div><p>Notice we didn&rsquo;t catch the file_id returned by the <code>put()</code> method. Let&rsquo;s find that in the <code>stringfiles.files</code> collection.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> f_id <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>stringfiles<span style="color:#f92672">.</span>files<span style="color:#f92672">.</span>find_one({ <span style="color:#e6db74">&#34;filename&#34;</span> : <span style="color:#e6db74">&#34;mystory.txt&#34;</span> },{ <span style="color:#e6db74">&#34;_id&#34;</span> : <span style="color:#ae81ff">1</span> })
+</code></pre></div><p>By now, you should be able to easily understand what the above statement is doing here. Let me quickly explain, just in case you don&rsquo;t remember. Here I am asking MongoDB to find a document in a collection named <code>stringfile.files</code> that has a <code>filename</code> field set to <code>mystory.txt</code>. Also, I used the <code>projection</code> to return only the <code>_id</code> field. So, the result would be something like this – <code>{u'_id': ObjectId('54e4463bd6e6fe5c5c2b7171')}</code></p>
+<p>Got it? Great! Now that we have the file_id, we can go ahead and read the file easily. Like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>get(f_id[<span style="color:#e6db74">&#39;_id&#39;</span>])<span style="color:#f92672">.</span>read()
+<span style="color:#e6db74">&#39;Here is the content of this file.&#39;</span>
+</code></pre></div><p>Easy, right? I told you so. But this approach has a problem. The problem lies in the fact that the file name doesn&rsquo;t have to be unique. This means that if you insert a file multiple times, then you will have multiple entries with the same file name in fs.files collection. Let&rsquo;s try it ourselves.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> fs <span style="color:#f92672">=</span> GridFS(db)
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;Here is the content of this file.&#34;</span>, filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mystory.txt&#34;</span>)
+ObjectId(<span style="color:#e6db74">&#39;54e44bcdd6e6fe5c5c2b7173&#39;</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;Here is the content of this file.&#34;</span>, filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mystory.txt&#34;</span>)
+ObjectId(<span style="color:#e6db74">&#39;54e44bced6e6fe5c5c2b7175&#39;</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;Here is the content of this file.&#34;</span>, filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mystory.txt&#34;</span>)
+ObjectId(<span style="color:#e6db74">&#39;54e44bcfd6e6fe5c5c2b7177&#39;</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;Here is the content of this file.&#34;</span>, filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mystory.txt&#34;</span>)
+ObjectId(<span style="color:#e6db74">&#39;54e44bd0d6e6fe5c5c2b7179&#39;</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;Here is the content of this file.&#34;</span>, filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mystory.txt&#34;</span>)
+ObjectId(<span style="color:#e6db74">&#39;54e44bd1d6e6fe5c5c2b717b&#39;</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;Here is the content of this file.&#34;</span>, filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mystory.txt&#34;</span>)
+ObjectId(<span style="color:#e6db74">&#39;54e44bd2d6e6fe5c5c2b717d&#39;</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span>
+</code></pre></div><p>We just stored the same file with the same content six times, and every time it returned a file_id. If I go to my <code>mongo</code> shell, then I can see similar results there also. See below the output of find() on mongo shell.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;</span> db<span style="color:#f92672">.</span>fs<span style="color:#f92672">.</span>files<span style="color:#f92672">.</span>find()
+{ <span style="color:#e6db74">&#34;_id&#34;</span> : ObjectId(<span style="color:#e6db74">&#34;54e44bcdd6e6fe5c5c2b7173&#34;</span>), <span style="color:#e6db74">&#34;chunkSize&#34;</span> : <span style="color:#ae81ff">261120</span>, <span style="color:#e6db74">&#34;filename&#34;</span> : <span style="color:#e6db74">&#34;mystory.txt&#34;</span>, <span style="color:#e6db74">&#34;length&#34;</span> : <span style="color:#ae81ff">33</span>, <span style="color:#e6db74">&#34;uploadDate&#34;</span> : ISODate(<span style="color:#e6db74">&#34;2015-02-18T08:22:37.029Z&#34;</span>), <span style="color:#e6db74">&#34;md5&#34;</span> : <span style="color:#e6db74">&#34;9f1a03ba9a31737a554ea79470f3a621&#34;</span> }
+{ <span style="color:#e6db74">&#34;_id&#34;</span> : ObjectId(<span style="color:#e6db74">&#34;54e44bced6e6fe5c5c2b7175&#34;</span>), <span style="color:#e6db74">&#34;chunkSize&#34;</span> : <span style="color:#ae81ff">261120</span>, <span style="color:#e6db74">&#34;filename&#34;</span> : <span style="color:#e6db74">&#34;mystory.txt&#34;</span>, <span style="color:#e6db74">&#34;length&#34;</span> : <span style="color:#ae81ff">33</span>, <span style="color:#e6db74">&#34;uploadDate&#34;</span> : ISODate(<span style="color:#e6db74">&#34;2015-02-18T08:22:38.958Z&#34;</span>), <span style="color:#e6db74">&#34;md5&#34;</span> : <span style="color:#e6db74">&#34;9f1a03ba9a31737a554ea79470f3a621&#34;</span> }
+{ <span style="color:#e6db74">&#34;_id&#34;</span> : ObjectId(<span style="color:#e6db74">&#34;54e44bcfd6e6fe5c5c2b7177&#34;</span>), <span style="color:#e6db74">&#34;chunkSize&#34;</span> : <span style="color:#ae81ff">261120</span>, <span style="color:#e6db74">&#34;filename&#34;</span> : <span style="color:#e6db74">&#34;mystory.txt&#34;</span>, <span style="color:#e6db74">&#34;length&#34;</span> : <span style="color:#ae81ff">33</span>, <span style="color:#e6db74">&#34;uploadDate&#34;</span> : ISODate(<span style="color:#e6db74">&#34;2015-02-18T08:22:39.878Z&#34;</span>), <span style="color:#e6db74">&#34;md5&#34;</span> : <span style="color:#e6db74">&#34;9f1a03ba9a31737a554ea79470f3a621&#34;</span> }
+{ <span style="color:#e6db74">&#34;_id&#34;</span> : ObjectId(<span style="color:#e6db74">&#34;54e44bd0d6e6fe5c5c2b7179&#34;</span>), <span style="color:#e6db74">&#34;chunkSize&#34;</span> : <span style="color:#ae81ff">261120</span>, <span style="color:#e6db74">&#34;filename&#34;</span> : <span style="color:#e6db74">&#34;mystory.txt&#34;</span>, <span style="color:#e6db74">&#34;length&#34;</span> : <span style="color:#ae81ff">33</span>, <span style="color:#e6db74">&#34;uploadDate&#34;</span> : ISODate(<span style="color:#e6db74">&#34;2015-02-18T08:22:40.789Z&#34;</span>), <span style="color:#e6db74">&#34;md5&#34;</span> : <span style="color:#e6db74">&#34;9f1a03ba9a31737a554ea79470f3a621&#34;</span> }
+{ <span style="color:#e6db74">&#34;_id&#34;</span> : ObjectId(<span style="color:#e6db74">&#34;54e44bd1d6e6fe5c5c2b717b&#34;</span>), <span style="color:#e6db74">&#34;chunkSize&#34;</span> : <span style="color:#ae81ff">261120</span>, <span style="color:#e6db74">&#34;filename&#34;</span> : <span style="color:#e6db74">&#34;mystory.txt&#34;</span>, <span style="color:#e6db74">&#34;length&#34;</span> : <span style="color:#ae81ff">33</span>, <span style="color:#e6db74">&#34;uploadDate&#34;</span> : ISODate(<span style="color:#e6db74">&#34;2015-02-18T08:22:41.684Z&#34;</span>), <span style="color:#e6db74">&#34;md5&#34;</span> : <span style="color:#e6db74">&#34;9f1a03ba9a31737a554ea79470f3a621&#34;</span> }
+{ <span style="color:#e6db74">&#34;_id&#34;</span> : ObjectId(<span style="color:#e6db74">&#34;54e44bd2d6e6fe5c5c2b717d&#34;</span>), <span style="color:#e6db74">&#34;chunkSize&#34;</span> : <span style="color:#ae81ff">261120</span>, <span style="color:#e6db74">&#34;filename&#34;</span> : <span style="color:#e6db74">&#34;mystory.txt&#34;</span>, <span style="color:#e6db74">&#34;length&#34;</span> : <span style="color:#ae81ff">33</span>, <span style="color:#e6db74">&#34;uploadDate&#34;</span> : ISODate(<span style="color:#e6db74">&#34;2015-02-18T08:22:42.581Z&#34;</span>), <span style="color:#e6db74">&#34;md5&#34;</span> : <span style="color:#e6db74">&#34;9f1a03ba9a31737a554ea79470f3a621&#34;</span> }
+<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>The only fields different are <code>_id</code> and <code>uploadDate</code>. Rests of the things are exactly the same. Why, you may ask, MongoDB is doing so? Probably this is a wonderful way of versioning files. If you need to read the file, just get the latest one. If you don&rsquo;t like the idea, then you can give your file a unique name.</p>
+<p>What should we do now? Don&rsquo;t worry. We have an easy way to get the most recent file. Actually, we can get all the metadata for the most recent file. Here is how you do it. The good part is, you don&rsquo;t need file_id to read the content of the file. We just need to know the file name, and we are good to go. See here –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> f <span style="color:#f92672">=</span> fs<span style="color:#f92672">.</span>get_last_version(filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mystory.txt&#34;</span>)
+</code></pre></div><p>Read the content of the file.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> f<span style="color:#f92672">.</span>read()
+<span style="color:#e6db74">&#39;Here is the content of this file.&#39;</span>
+</code></pre></div><p>Get the &lsquo;_id&rsquo; of the file.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> f<span style="color:#f92672">.</span>_id
+ObjectId(<span style="color:#e6db74">&#39;54e4500fd6e6fe5c5c2b717f&#39;</span>)
+</code></pre></div><p>Get the upload date of the file.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> f<span style="color:#f92672">.</span>uploadDate
+datetime<span style="color:#f92672">.</span>datetime(<span style="color:#ae81ff">2015</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">18</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">40</span>, <span style="color:#ae81ff">47</span>, <span style="color:#ae81ff">629000</span>)
+</code></pre></div><p>Get the name of the file.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> f<span style="color:#f92672">.</span>filename
+<span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;mystory.txt&#39;</span>
+</code></pre></div><p>Interesting, right? I am enjoying this topic, and I hope you are enjoying it.</p>
+<h3 id="delete-files">Delete files</h3>
+<p>Deleting files is extremely simple. The <code>delete()</code> method removes all data relating to the file_id passed as an argument to the method. Let&rsquo;s see a quick example.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> db <span style="color:#f92672">=</span> MongoClient()<span style="color:#f92672">.</span>mygrid
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs <span style="color:#f92672">=</span> GridFS(db)
+<span style="color:#f92672">&gt;&gt;&gt;</span> fileid <span style="color:#f92672">=</span> fs<span style="color:#f92672">.</span>put(<span style="color:#e6db74">&#34;This is the content of the file.&#34;</span>, filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;newfile.txt&#34;</span>)
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>get(fileid)<span style="color:#f92672">.</span>read()
+<span style="color:#e6db74">&#39;This is the content of the file.&#39;</span>
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>delete(fileid)
+</code></pre></div><p>In case you don&rsquo;t know the file_id, but you know the name of the file then you can delete the most recently uploaded file like this –</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;&gt;</span> fileid <span style="color:#f92672">=</span> fs<span style="color:#f92672">.</span>get_last_version(filename<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;newfile.txt&#34;</span>)<span style="color:#f92672">.</span>_id
+<span style="color:#f92672">&gt;&gt;&gt;</span> fs<span style="color:#f92672">.</span>delete(fileid)
+</code></pre></div><p>I would highly recommend going through Python&rsquo;s GridFS documentation.</p>
+
+
+  	<h2>Comments</h2>
+	<div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "psabhay" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+    </main>
+
+    
+  </body>
+</html>
